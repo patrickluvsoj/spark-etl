@@ -5,9 +5,8 @@ from pyspark.sql.functions import udf, col
 from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format
 
 
-os.environ['AWS_ACCESS_KEY_ID']='AKIAJ2J7JXMJY3KPHJ3A'
-os.environ['AWS_SECRET_ACCESS_KEY']='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'
-
+os.environ['AWS_ACCESS_KEY_ID']= #empty
+os.environ['AWS_SECRET_ACCESS_KEY']= #empty
 
 def create_spark_session():
     spark = SparkSession \

@@ -1,17 +1,23 @@
+import configparser
 from datetime import datetime
 import os
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
 
-os.environ['AWS_ACCESS_KEY_ID']= #empty
-os.environ['AWS_SECRET_ACCESS_KEY']= #empty
+config = configparser.ConfigParser()
+config.read('dl.cfg')
+
+os.environ['AWS_ACCESS_KEY_ID']=config['AWS']['AWS_ACCESS_KEY_ID']
+os.environ['AWS_SECRET_ACCESS_KEY']=config['AWS']['AWS_SECRET_ACCESS_KEY']
+
 
 def create_spark_session():
-    spark = SparkSession \
-        .builder \
+    spark = SparkSession.builder \
         .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
-        .getOrCreates()
+        .config("spark.hadoop.fs.s3a.awsAccessKeyId", os.environ['AWS_ACCESS_KEY_ID']) \
+        .config("spark.hadoop.fs.s3a.awsSecretAccessKey", os.environ['AWS_SECRET_ACCESS_KEY']) \
+        .getOrCreate()
     return spark
 
 
@@ -47,6 +53,7 @@ def process_log_data(spark, input_data, output_data):
     # get filepath to log data file
     log_data = input_data + 'log_data/*/*/*.json'
 
+
     # read log data file
     df = spark.read.json(log_data)
     
@@ -65,7 +72,7 @@ def process_log_data(spark, input_data, output_data):
     users_table.write.parquet(os.path.join(output_data, 'users_table'), 'overwrite')
 
     # create timestamp column from original timestamp column
-    df.withColumn('ts', F.to_timestamp(F.col('ts')/1000))
+    df = df.withColumn('ts', F.to_timestamp(F.col('ts')/1000))
     
     # extract columns to create time table
     df.createOrReplaceTempView("logdata")
@@ -112,6 +119,8 @@ def main():
     
     process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data)
+
+    spark.stop()
 
 
 if __name__ == "__main__":

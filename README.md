@@ -19,7 +19,7 @@ The database schema is normalized using a *star schema* and tables are structure
 - **times:** start_time, hour, day, week, month, year, weekday
 
 ### File Description & Steps to Run ETL
-`dl.cfg` includes parameters required to access S3 resources
-`etl.py` includes script that runs ETL
-#1 Paste AWS Secret and Key in the `dl.cfg` file
-#2 `s3-etl.ipynb` is used to test etl script.
+- `dl.cfg` includes parameters required to access S3 resources
+- `etl.py` includes script that runs ETL
+-  Paste AWS Secret and Key in the `dl.cfg` file
+- `s3-etl.ipynb` is used to test etl script.
